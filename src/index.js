@@ -20,13 +20,25 @@ class Board extends React.Component {
     super(props);
     this.state = {
       squares: Array(9).fill(null),
+      // Se maneja con un bool, respecto al jugador de X, los turnos
+      // El juego inicia con el jugador X
+      xIsNext: true,
     }
   }
 
   handleClick = (i) => {
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares});
+    if(squares[i] === null) {
+      squares[i] = this.state.xIsNext ? 'X' : 'O';
+      this.setState(
+        {
+          squares,
+          xIsNext: !this.state.xIsNext,
+        }
+      );
+    } else {
+      alert('Square already played.')
+    }
   };
 
   renderSquare(i) {
@@ -39,7 +51,7 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
