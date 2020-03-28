@@ -8,7 +8,8 @@ function Square(props) {
     return (
       <button
         className="square"
-        onClick={() => props.onClick()}>
+        onClick={() => props.onClick()}
+        disabled={props.disabled}>
           {props.value}
       </button>
     );
@@ -23,7 +24,18 @@ class Board extends React.Component {
       // Se maneja con un bool, respecto al jugador de X, los turnos
       // El juego inicia con el jugador X
       xIsNext: true,
+      ended: false,
+      status: 'Next turn is: X',
     }
+  }
+
+  tie(squares){
+    for(let square of squares) {
+      if(square === null) {
+        return false;
+      }
+    }
+    return true;
   }
 
   calcWinner(squares) {
@@ -58,10 +70,22 @@ class Board extends React.Component {
         {
           squares,
           xIsNext: !this.state.xIsNext,
+          status: ('Next turn is: ' + (!this.state.xIsNext ? 'X' : 'O')),
         }
       );
       if(this.calcWinner(squares)) {
-        alert(squares[i] + ' wins the game!');
+        this.setState(
+          {
+            ended: true,
+            status: (squares[i] + ' wins the game!'),
+          });
+      }
+      if(this.tie(squares)) {
+        this.setState(
+          {
+            ended: true,
+            status: 'Game ends in a tie',
+          });
       }
     } else {
       alert('Square already played.')
@@ -73,16 +97,16 @@ class Board extends React.Component {
       <Square
         value={this.state.squares[i]}
         onClick={() => this.handleClick(i)}
+        disabled={this.state.ended}
       />
     );
   }
 
   render() {
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
-        <div className="status">{status}</div>
+        <div className="status">{this.state.status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
