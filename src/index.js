@@ -17,12 +17,47 @@ function Square(props) {
 
 class Board extends React.Component {
 
+  renderSquare(i) {
+    return (
+      <Square
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
+        disabled={this.props.ended}
+      />
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
+}
+
+class Game extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null),
-      // Se maneja con un bool, respecto al jugador de X, los turnos
-      // El juego inicia con el jugador X
+      history: [{
+        squares: Array(9).fill(null),
+      }],
       xIsNext: true,
       ended: false,
       status: 'Next turn is: X',
@@ -63,12 +98,16 @@ class Board extends React.Component {
 
   // Uso de arrow funct para heredar ambiente del objeto (this apunta al objeto)
   handleClick = (i) => {
-    const squares = this.state.squares.slice();
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     if(squares[i] === null) {
       squares[i] = this.state.xIsNext ? 'X' : 'O';
       this.setState(
         {
-          squares,
+          history: history.concat([{
+            squares: squares,
+          }]),
           xIsNext: !this.state.xIsNext,
           status: ('Next turn is: ' + (!this.state.xIsNext ? 'X' : 'O')),
         }
@@ -91,51 +130,21 @@ class Board extends React.Component {
       alert('Square already played.')
     }
   };
-
-  renderSquare(i) {
-    return (
-      <Square
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
-        disabled={this.state.ended}
-      />
-    );
-  }
-
   render() {
-
-    return (
-      <div>
-        <div className="status">{this.state.status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
-}
-
-class Game extends React.Component {
-  render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={squares}
+            onClick={(i)=>this.handleClick(i)}
+            ended={this.state.ended}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div className="status">{this.state.status}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
