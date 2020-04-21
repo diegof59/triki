@@ -96,6 +96,10 @@ class Game extends React.Component {
     return null;
   }
 
+  jumpTo(step){
+    //TODO
+  }
+
   // Uso de arrow funct para heredar ambiente del objeto (this apunta al objeto)
   handleClick = (i) => {
     const history = this.state.history;
@@ -119,7 +123,7 @@ class Game extends React.Component {
             status: (squares[i] + ' wins the game!'),
           });
       }
-      if(this.tie(squares)) {
+      else if(this.tie(squares)) {
         this.setState(
           {
             ended: true,
@@ -134,6 +138,17 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    const moves = history.map((step, move) => {
+      const desc = move ?
+        'Go to move #' + move :
+        'Go to game start';
+      return (
+        <li key={move}>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      );
+    });
+
     return (
       <div className="game">
         <div className="game-board">
@@ -145,7 +160,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div className="status">{this.state.status}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
