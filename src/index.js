@@ -58,6 +58,7 @@ class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null),
       }],
+      currentMoveNum: 0,
       xIsNext: true,
       ended: false,
       status: 'Next turn is: X',
@@ -96,13 +97,23 @@ class Game extends React.Component {
     return null;
   }
 
-  jumpTo(step){
-    //TODO
+  jumpTo(moveNumber){
+    let xIsNext = (moveNumber % 2) === 0
+    this.setState(
+      {
+        currentMoveNum: moveNumber,
+        xIsNext: xIsNext,
+        status: this.state.ended ?
+          'Game has ended, just showing.' :
+          'Next turn is: ' + (xIsNext ? 'X' : 'O'),
+      }  
+    );
+
   }
 
   // Uso de arrow funct para heredar ambiente del objeto (this apunta al objeto)
   handleClick = (i) => {
-    const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.currentMoveNum + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if(squares[i] === null) {
@@ -112,6 +123,7 @@ class Game extends React.Component {
           history: history.concat([{
             squares: squares,
           }]),
+          currentMoveNum: (this.state.currentMoveNum + 1), //history.length Funciona también
           xIsNext: !this.state.xIsNext,
           status: ('Next turn is: ' + (!this.state.xIsNext ? 'X' : 'O')),
         }
@@ -136,15 +148,15 @@ class Game extends React.Component {
   };
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.currentMoveNum];
     const squares = current.squares.slice();
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
+    const moves = history.map((move, moveNumber) => {
+      const buttonDescription = moveNumber ?
+        'Go to move #' + moveNumber :
         'Go to game start';
       return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        <li key={moveNumber}>
+          <button onClick={() => this.jumpTo(moveNumber)}>{buttonDescription}</button>
         </li>
       );
     });
