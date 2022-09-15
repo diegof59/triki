@@ -1,6 +1,6 @@
 ## Triki
 
-Simple web app for playing triki / tic-tac-toe game.
+Simple web app for playing triki / tic-tac-toe game. Following the tutorial from ReactJS web page / documentation (As of March 2020).
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
